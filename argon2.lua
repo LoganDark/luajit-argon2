@@ -106,6 +106,10 @@ local argon2 = ffi.load('libargon2.so.1')
 
 local module = {}
 
+module._NAME = 'argon2'
+module._DESCRIPTION = 'LuaJIT bindings to the 20171227 version of Argon2, also known as the Ubuntu `argon2` package or `libargon2.so.1`.'
+module._VERSION = '1.0.0'
+
 module.argon2 = argon2
 
 module.OK = argon2.ARGON2_OK
