@@ -125,7 +125,7 @@ local module = {
 	_AUTHOR = 'LoganDark',
 	_LICENSE = 'MIT',
 	_DESCRIPTION = 'LuaJIT bindings to the 20171227 version of Argon2, also known as the Ubuntu `argon2` package or `libargon2.so.1`.',
-	_VERSION = '1.0.0',
+	_VERSION = '1.0.1',
 
 	argon2 = argon2,
 
