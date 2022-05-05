@@ -189,7 +189,7 @@ local error_strings = {
 }
 
 function module.error_to_string(code)
-	return error_strings[1 + -code]
+	return error_strings[1 + -tonumber(code)]
 end
 
 function module.error_message(code)
