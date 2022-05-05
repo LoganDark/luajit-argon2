@@ -22,6 +22,8 @@
 -- SOFTWARE.
 
 local ffi = require('ffi')
+local ffi_string = ffi.string
+local ffi_buffer = ffi.typeof('uint8_t[?]')
 
 ffi.cdef([[
 
@@ -104,50 +106,69 @@ size_t argon2_encodedlen(
 
 local argon2 = ffi.load('libargon2.so.1')
 
-local module = {}
+local argon2_type2string = argon2.argon2_type2string
+local argon2_hash = argon2.argon2_hash
+local argon2_verify = argon2.argon2_verify
+local argon2_error_message = argon2.argon2_error_message
+local argon2_encodedlen = argon2.argon2_encodedlen
 
-module._NAME = 'argon2'
-module._DESCRIPTION = 'LuaJIT bindings to the 20171227 version of Argon2, also known as the Ubuntu `argon2` package or `libargon2.so.1`.'
-module._VERSION = '1.0.0'
+local ARGON2_OK = argon2.ARGON2_OK
+local ARGON2_ENCODING_FAIL = argon2.ARGON2_ENCODING_FAIL
 
-module.argon2 = argon2
+local module = {
+	_NAME = 'argon2',
+	_AUTHOR = 'LoganDark',
+	_LICENSE = 'MIT',
+	_DESCRIPTION = 'LuaJIT bindings to the 20171227 version of Argon2, also known as the Ubuntu `argon2` package or `libargon2.so.1`.',
+	_VERSION = '1.0.0',
 
-module.OK = argon2.ARGON2_OK
-module.OUTPUT_PTR_NULL = argon2.ARGON2_OUTPUT_PTR_NULL
-module.OUTPUT_TOO_SHORT = argon2.ARGON2_OUTPUT_TOO_SHORT
-module.OUTPUT_TOO_LONG = argon2.ARGON2_OUTPUT_TOO_LONG
-module.PWD_TOO_SHORT = argon2.ARGON2_PWD_TOO_SHORT
-module.PWD_TOO_LONG = argon2.ARGON2_PWD_TOO_LONG
-module.SALT_TOO_SHORT = argon2.ARGON2_SALT_TOO_SHORT
-module.SALT_TOO_LONG = argon2.ARGON2_SALT_TOO_LONG
-module.AD_TOO_SHORT = argon2.ARGON2_AD_TOO_SHORT
-module.AD_TOO_LONG = argon2.ARGON2_AD_TOO_LONG
-module.SECRET_TOO_SHORT = argon2.ARGON2_SECRET_TOO_SHORT
-module.SECRET_TOO_LONG = argon2.ARGON2_SECRET_TOO_LONG
-module.TIME_TOO_SMALL = argon2.ARGON2_TIME_TOO_SMALL
-module.TIME_TOO_LARGE = argon2.ARGON2_TIME_TOO_LARGE
-module.MEMORY_TOO_LITTLE = argon2.ARGON2_MEMORY_TOO_LITTLE
-module.MEMORY_TOO_MUCH = argon2.ARGON2_MEMORY_TOO_MUCH
-module.LANES_TOO_FEW = argon2.ARGON2_LANES_TOO_FEW
-module.LANES_TOO_MANY = argon2.ARGON2_LANES_TOO_MANY
-module.PWD_PTR_MISMATCH = argon2.ARGON2_PWD_PTR_MISMATCH
-module.SALT_PTR_MISMATCH = argon2.ARGON2_SALT_PTR_MISMATCH
-module.SECRET_PTR_MISMATCH = argon2.ARGON2_SECRET_PTR_MISMATCH
-module.AD_PTR_MISMATCH = argon2.ARGON2_AD_PTR_MISMATCH
-module.MEMORY_ALLOCATION_ERROR = argon2.ARGON2_MEMORY_ALLOCATION_ERROR
-module.FREE_MEMORY_CBK_NULL = argon2.ARGON2_FREE_MEMORY_CBK_NULL
-module.ALLOCATE_MEMORY_CBK_NULL = argon2.ARGON2_ALLOCATE_MEMORY_CBK_NULL
-module.INCORRECT_PARAMETER = argon2.ARGON2_INCORRECT_PARAMETER
-module.INCORRECT_TYPE = argon2.ARGON2_INCORRECT_TYPE
-module.OUT_PTR_MISMATCH = argon2.ARGON2_OUT_PTR_MISMATCH
-module.THREADS_TOO_FEW = argon2.ARGON2_THREADS_TOO_FEW
-module.THREADS_TOO_MANY = argon2.ARGON2_THREADS_TOO_MANY
-module.MISSING_ARGS = argon2.ARGON2_MISSING_ARGS
-module.ENCODING_FAIL = argon2.ARGON2_ENCODING_FAIL
-module.DECODING_FAIL = argon2.ARGON2_DECODING_FAIL
-module.THREAD_FAIL = argon2.ARGON2_THREAD_FAIL
-module.DECODING_LENGTH_FAIL = argon2.ARGON2_DECODING_LENGTH_FAIL
-module.VERIFY_MISMATCH = argon2.ARGON2_VERIFY_MISMATCH
+	argon2 = argon2,
+
+	OK = argon2.ARGON2_OK,
+	OUTPUT_PTR_NULL = argon2.ARGON2_OUTPUT_PTR_NULL,
+	OUTPUT_TOO_SHORT = argon2.ARGON2_OUTPUT_TOO_SHORT,
+	OUTPUT_TOO_LONG = argon2.ARGON2_OUTPUT_TOO_LONG,
+	PWD_TOO_SHORT = argon2.ARGON2_PWD_TOO_SHORT,
+	PWD_TOO_LONG = argon2.ARGON2_PWD_TOO_LONG,
+	SALT_TOO_SHORT = argon2.ARGON2_SALT_TOO_SHORT,
+	SALT_TOO_LONG = argon2.ARGON2_SALT_TOO_LONG,
+	AD_TOO_SHORT = argon2.ARGON2_AD_TOO_SHORT,
+	AD_TOO_LONG = argon2.ARGON2_AD_TOO_LONG,
+	SECRET_TOO_SHORT = argon2.ARGON2_SECRET_TOO_SHORT,
+	SECRET_TOO_LONG = argon2.ARGON2_SECRET_TOO_LONG,
+	TIME_TOO_SMALL = argon2.ARGON2_TIME_TOO_SMALL,
+	TIME_TOO_LARGE = argon2.ARGON2_TIME_TOO_LARGE,
+	MEMORY_TOO_LITTLE = argon2.ARGON2_MEMORY_TOO_LITTLE,
+	MEMORY_TOO_MUCH = argon2.ARGON2_MEMORY_TOO_MUCH,
+	LANES_TOO_FEW = argon2.ARGON2_LANES_TOO_FEW,
+	LANES_TOO_MANY = argon2.ARGON2_LANES_TOO_MANY,
+	PWD_PTR_MISMATCH = argon2.ARGON2_PWD_PTR_MISMATCH,
+	SALT_PTR_MISMATCH = argon2.ARGON2_SALT_PTR_MISMATCH,
+	SECRET_PTR_MISMATCH = argon2.ARGON2_SECRET_PTR_MISMATCH,
+	AD_PTR_MISMATCH = argon2.ARGON2_AD_PTR_MISMATCH,
+	MEMORY_ALLOCATION_ERROR = argon2.ARGON2_MEMORY_ALLOCATION_ERROR,
+	FREE_MEMORY_CBK_NULL = argon2.ARGON2_FREE_MEMORY_CBK_NULL,
+	ALLOCATE_MEMORY_CBK_NULL = argon2.ARGON2_ALLOCATE_MEMORY_CBK_NULL,
+	INCORRECT_PARAMETER = argon2.ARGON2_INCORRECT_PARAMETER,
+	INCORRECT_TYPE = argon2.ARGON2_INCORRECT_TYPE,
+	OUT_PTR_MISMATCH = argon2.ARGON2_OUT_PTR_MISMATCH,
+	THREADS_TOO_FEW = argon2.ARGON2_THREADS_TOO_FEW,
+	THREADS_TOO_MANY = argon2.ARGON2_THREADS_TOO_MANY,
+	MISSING_ARGS = argon2.ARGON2_MISSING_ARGS,
+	ENCODING_FAIL = argon2.ARGON2_ENCODING_FAIL,
+	DECODING_FAIL = argon2.ARGON2_DECODING_FAIL,
+	THREAD_FAIL = argon2.ARGON2_THREAD_FAIL,
+	DECODING_LENGTH_FAIL = argon2.ARGON2_DECODING_LENGTH_FAIL,
+	VERIFY_MISMATCH = argon2.ARGON2_VERIFY_MISMATCH,
+
+	argon2d = argon2.Argon2_d,
+	argon2i = argon2.Argon2_i,
+	argon2id = argon2.Argon2_id,
+
+	VERSION_10 = argon2.ARGON2_VERSION_10,
+	VERSION_13 = argon2.ARGON2_VERSION_13,
+	VERSION_NUMBER = argon2.ARGON2_VERSION_NUMBER
+}
 
 local error_strings = {
 	'OK',
@@ -193,34 +214,22 @@ function module.error_to_string(code)
 end
 
 function module.error_message(code)
-	return ffi.string(ffi.gc(argon2.argon2_error_message(code), ffi.C.free))
+	return ffi_string(argon2_error_message(code))
 end
 
-module.argon2d = argon2.Argon2_d
-module.argon2i = argon2.Argon2_i
-module.argon2id = argon2.Argon2_id
-
-module.VERSION_10 = argon2.ARGON2_VERSION_10
-module.VERSION_13 = argon2.ARGON2_VERSION_13
-module.VERSION_NUMBER = argon2.ARGON2_VERSION_NUMBER
-
 function module.type_to_string(type, uppercase)
-	local ptr = argon2.argon2_type2string(type,·uppercase·and·1 or 0)
-	local gc = ffi.gc(ptr, ffi.C.free)
-	return ffi.string(gc)
+	return ffi_string(argon2_type2string(type,·uppercase·and·1 or 0))
 end
 
 function module.encoded_len(
 	iterations, memory_kb, parallelism,
 	salt_len, hash_len, type
 )
-	return argon2.argon2_encodedlen(
+	return argon2_encodedlen(
 		iterations, memory_kb, parallelism,
 		salt_len, hash_len, type
 	) - 1
 end
-
-local buffer = ffi.typeof('uint8_t[?]')
 
 -- internal hash function that module.hash and module.hash_encoded both use
 local function hash(
@@ -233,18 +242,18 @@ local function hash(
 	local hash_buf
 	local encoded_buf, encoded_len
 
-	if hash then hash_buf = buffer(hash_len) end
+	if hash then hash_buf = ffi_buffer(hash_len) end
 
 	if encoded then
-		encoded_len = module.encoded_len(
+		encoded_len = argon2_encodedlen(
 			iterations, memory_kb, parallelism,
 			#salt, hash_len, type
-		) + 1
+		)
 
-		encoded_buf = buffer(encoded_len)
+		encoded_buf = ffi_buffer(encoded_len)
 	end
 
-	local code = argon2.argon2_hash(
+	local code = argon2_hash(
 		iterations, memory_kb, parallelism,
 		password, #password,
 		salt, #salt,
@@ -253,16 +262,16 @@ local function hash(
 		type, version
 	)
 
-	if code == module.OK then
+	if code == ARGON2_OK then
 		if hash_buf and encoded_buf then
-			return ffi.string(hash_buf, hash_len), ffi.string(encoded_buf, encoded_len - 1)
+			return ffi_string(hash_buf, hash_len), ffi_string(encoded_buf, encoded_len - 1)
 		elseif hash_buf then
-			return ffi.string(hash_buf, hash_len)
+			return ffi_string(hash_buf, hash_len)
 		elseif encoded_buf then
-			return ffi.string(encoded_buf, encoded_len - 1)
+			return ffi_string(encoded_buf, encoded_len - 1)
 		end
-	elseif code == module.ENCODING_FAIL and hash_buf then
-		return nil, code, ffi.string(hash_buf, hash_len)
+	elseif code == ARGON2_ENCODING_FAIL and hash_buf then
+		return nil, code, ffi_string(hash_buf, hash_len)
 	else
 		return nil, code
 	end
@@ -293,9 +302,9 @@ function module.hash_encoded(
 end
 
 function module.verify_encoded(encoded, password, type)
-	local code = argon2.argon2_verify(encoded, password, #password, type)
+	local code = argon2_verify(encoded, password, #password, type)
 
-	if code == module.OK then
+	if code == ARGON2_OK then
 		return true
 	else
 		return false, code
