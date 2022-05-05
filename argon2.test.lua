@@ -43,4 +43,4 @@ print(encoded, err2)
 local ok, err3 = argon2.verify_encoded(encoded, 'hi', argon2.argon2id)
 print(ok, err3)
 
-print(argon2.error_to_message(argon2.VERIFY_MISMATCH))
+print(argon2.error_message(argon2.VERIFY_MISMATCH))
