@@ -32,15 +32,44 @@
 
 local argon2 = require('argon2')
 
-local hash, err1 = argon2.hash(10000, 64, 1, 'hi', 'thisisasalt', 16, argon2.argon2id, argon2.VERSION_NUMBER)
-if hash and ngx and ngx.encode_base64 then hash = ngx.encode_base64(hash) end
+local function assert_eq(left, right)
+	if left ~= right then
+		error(string.format([[
+assertion failed! (left == right)
+  left:  %s
+  right: %s]], tostring(left), tostring(right)))
+	end
+end
 
-print(hash, err1)
+assert_eq(argon2._NAME, 'argon2')
+assert_eq(argon2._AUTHOR, 'LoganDark')
+assert_eq(argon2._LICENSE, 'MIT')
+assert_eq(argon2._VERSION, '1.0.0')
 
-local encoded, err2 = argon2.hash_encoded(10000, 64, 1, 'hi', 'thisisasalt', 16, argon2.argon2id, argon2.VERSION_NUMBER)
-print(encoded, err2)
+assert(argon2.argon2)
 
-local ok, err3 = argon2.verify_encoded(encoded, 'hi', argon2.argon2id)
-print(ok, err3)
+assert(argon2.argon2d)
+assert(argon2.argon2i)
+assert(argon2.argon2id)
 
-print(argon2.error_message(argon2.VERIFY_MISMATCH))
+assert_eq(argon2.error_to_string(argon2.OK), 'OK')
+assert_eq(argon2.error_to_string(argon2.VERIFY_MISMATCH), 'VERIFY_MISMATCH')
+
+assert_eq(argon2.error_message(argon2.OK), 'OK')
+assert_eq(argon2.error_message(argon2.VERIFY_MISMATCH), 'The password does not match the supplied hash')
+
+assert_eq(argon2.type_to_string(argon2.argon2id), 'argon2id')
+assert_eq(argon2.type_to_string(argon2.argon2i, false), 'argon2i')
+assert_eq(argon2.type_to_string(argon2.argon2d, true), 'Argon2d')
+
+assert_eq(argon2.encoded_len(1, 16, 1, 8, 16, argon2.argon2id), 62)
+
+local hash, err = argon2.hash(1, 16, 1, 'password', 'umbreons', 16, argon2.argon2id, argon2.VERSION_NUMBER)
+assert(not err)
+print((string.gsub(hash, '.', function(c) return string.format('%02X', string.byte(c)) end)))
+
+local encoded, err = argon2.hash_encoded(1, 16, 1, 'password', 'umbreons', 16, argon2.argon2id, argon2.VERSION_NUMBER)
+assert(not err)
+print(encoded)
+
+assert(argon2.verify_encoded(encoded, 'password', argon2.argon2id))
