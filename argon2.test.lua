@@ -26,14 +26,21 @@
 --
 -- To run the test:
 -- $ resty argon2.test.lua
+--
+-- Alternatively, it can be run with the vanilla LuaJIT interpreter:
+-- $ luajit argon2.test.lua
 
-local hash, err1 = module.hash(10000, 64, 1, 'hi', 'thisisasalt', 16, module.argon2id, module.VERSION_NUMBER)
-print(hash and ngx.encode_base64(hash), err1)
+local argon2 = require('argon2')
 
-local encoded, err2 = module.hash_encoded(10000, 64, 1, 'hi', 'thisisasalt', 16, module.argon2id, module.VERSION_NUMBER)
+local hash, err1 = argon2.hash(10000, 64, 1, 'hi', 'thisisasalt', 16, argon2.argon2id, argon2.VERSION_NUMBER)
+if hash and ngx and ngx.encode_base64 then hash = ngx.encode_base64(hash) end
+
+print(hash, err1)
+
+local encoded, err2 = argon2.hash_encoded(10000, 64, 1, 'hi', 'thisisasalt', 16, argon2.argon2id, argon2.VERSION_NUMBER)
 print(encoded, err2)
 
-local ok, err3 = module.verify_encoded(encoded, 'hi', module.argon2id)
+local ok, err3 = argon2.verify_encoded(encoded, 'hi', argon2.argon2id)
 print(ok, err3)
 
-print(module.error_to_message(module.VERIFY_MISMATCH))
+print(argon2.error_to_message(argon2.VERIFY_MISMATCH))
