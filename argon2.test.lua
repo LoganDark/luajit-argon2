@@ -44,7 +44,7 @@ end
 assert_eq(argon2._NAME, 'argon2')
 assert_eq(argon2._AUTHOR, 'LoganDark')
 assert_eq(argon2._LICENSE, 'MIT')
-assert_eq(argon2._VERSION, '1.0.0')
+assert_eq(argon2._VERSION, '1.0.1')
 
 assert(argon2.argon2)
 
