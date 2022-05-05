@@ -192,7 +192,7 @@ function module.error_message(code)
 end
 
 function module.type_to_string(type, uppercase)
-	return ffi_string(argon2_type2string(type,·uppercase·and·1 or 0))
+	return ffi_string(argon2_type2string(type, uppercase and 1 or 0))
 end
 
 function module.encoded_len(
