@@ -22,8 +22,9 @@
 -- SOFTWARE.
 
 local ffi = require('ffi')
+local ffi_typeof = ffi.typeof
 local ffi_string = ffi.string
-local ffi_buffer = ffi.typeof('uint8_t[?]')
+local ffi_buffer = ffi_typeof('uint8_t[?]')
 
 ffi.cdef([[
 
@@ -106,6 +107,10 @@ size_t argon2_encodedlen(
 
 local argon2 = ffi.load('libargon2.so.1')
 
+local argon2_error_codes = ffi_typeof('argon2_error_codes')
+local argon2_type = ffi_typeof('argon2_type')
+local argon2_version = ffi_typeof('argon2_version')
+
 local argon2_type2string = argon2.argon2_type2string
 local argon2_hash = argon2.argon2_hash
 local argon2_verify = argon2.argon2_verify
@@ -124,50 +129,50 @@ local module = {
 
 	argon2 = argon2,
 
-	OK = argon2.ARGON2_OK,
-	OUTPUT_PTR_NULL = argon2.ARGON2_OUTPUT_PTR_NULL,
-	OUTPUT_TOO_SHORT = argon2.ARGON2_OUTPUT_TOO_SHORT,
-	OUTPUT_TOO_LONG = argon2.ARGON2_OUTPUT_TOO_LONG,
-	PWD_TOO_SHORT = argon2.ARGON2_PWD_TOO_SHORT,
-	PWD_TOO_LONG = argon2.ARGON2_PWD_TOO_LONG,
-	SALT_TOO_SHORT = argon2.ARGON2_SALT_TOO_SHORT,
-	SALT_TOO_LONG = argon2.ARGON2_SALT_TOO_LONG,
-	AD_TOO_SHORT = argon2.ARGON2_AD_TOO_SHORT,
-	AD_TOO_LONG = argon2.ARGON2_AD_TOO_LONG,
-	SECRET_TOO_SHORT = argon2.ARGON2_SECRET_TOO_SHORT,
-	SECRET_TOO_LONG = argon2.ARGON2_SECRET_TOO_LONG,
-	TIME_TOO_SMALL = argon2.ARGON2_TIME_TOO_SMALL,
-	TIME_TOO_LARGE = argon2.ARGON2_TIME_TOO_LARGE,
-	MEMORY_TOO_LITTLE = argon2.ARGON2_MEMORY_TOO_LITTLE,
-	MEMORY_TOO_MUCH = argon2.ARGON2_MEMORY_TOO_MUCH,
-	LANES_TOO_FEW = argon2.ARGON2_LANES_TOO_FEW,
-	LANES_TOO_MANY = argon2.ARGON2_LANES_TOO_MANY,
-	PWD_PTR_MISMATCH = argon2.ARGON2_PWD_PTR_MISMATCH,
-	SALT_PTR_MISMATCH = argon2.ARGON2_SALT_PTR_MISMATCH,
-	SECRET_PTR_MISMATCH = argon2.ARGON2_SECRET_PTR_MISMATCH,
-	AD_PTR_MISMATCH = argon2.ARGON2_AD_PTR_MISMATCH,
-	MEMORY_ALLOCATION_ERROR = argon2.ARGON2_MEMORY_ALLOCATION_ERROR,
-	FREE_MEMORY_CBK_NULL = argon2.ARGON2_FREE_MEMORY_CBK_NULL,
-	ALLOCATE_MEMORY_CBK_NULL = argon2.ARGON2_ALLOCATE_MEMORY_CBK_NULL,
-	INCORRECT_PARAMETER = argon2.ARGON2_INCORRECT_PARAMETER,
-	INCORRECT_TYPE = argon2.ARGON2_INCORRECT_TYPE,
-	OUT_PTR_MISMATCH = argon2.ARGON2_OUT_PTR_MISMATCH,
-	THREADS_TOO_FEW = argon2.ARGON2_THREADS_TOO_FEW,
-	THREADS_TOO_MANY = argon2.ARGON2_THREADS_TOO_MANY,
-	MISSING_ARGS = argon2.ARGON2_MISSING_ARGS,
-	ENCODING_FAIL = argon2.ARGON2_ENCODING_FAIL,
-	DECODING_FAIL = argon2.ARGON2_DECODING_FAIL,
-	THREAD_FAIL = argon2.ARGON2_THREAD_FAIL,
-	DECODING_LENGTH_FAIL = argon2.ARGON2_DECODING_LENGTH_FAIL,
-	VERIFY_MISMATCH = argon2.ARGON2_VERIFY_MISMATCH,
+	OK = argon2_error_codes(argon2.ARGON2_OK),
+	OUTPUT_PTR_NULL = argon2_error_codes(argon2.ARGON2_OUTPUT_PTR_NULL),
+	OUTPUT_TOO_SHORT = argon2_error_codes(argon2.ARGON2_OUTPUT_TOO_SHORT),
+	OUTPUT_TOO_LONG = argon2_error_codes(argon2.ARGON2_OUTPUT_TOO_LONG),
+	PWD_TOO_SHORT = argon2_error_codes(argon2.ARGON2_PWD_TOO_SHORT),
+	PWD_TOO_LONG = argon2_error_codes(argon2.ARGON2_PWD_TOO_LONG),
+	SALT_TOO_SHORT = argon2_error_codes(argon2.ARGON2_SALT_TOO_SHORT),
+	SALT_TOO_LONG = argon2_error_codes(argon2.ARGON2_SALT_TOO_LONG),
+	AD_TOO_SHORT = argon2_error_codes(argon2.ARGON2_AD_TOO_SHORT),
+	AD_TOO_LONG = argon2_error_codes(argon2.ARGON2_AD_TOO_LONG),
+	SECRET_TOO_SHORT = argon2_error_codes(argon2.ARGON2_SECRET_TOO_SHORT),
+	SECRET_TOO_LONG = argon2_error_codes(argon2.ARGON2_SECRET_TOO_LONG),
+	TIME_TOO_SMALL = argon2_error_codes(argon2.ARGON2_TIME_TOO_SMALL),
+	TIME_TOO_LARGE = argon2_error_codes(argon2.ARGON2_TIME_TOO_LARGE),
+	MEMORY_TOO_LITTLE = argon2_error_codes(argon2.ARGON2_MEMORY_TOO_LITTLE),
+	MEMORY_TOO_MUCH = argon2_error_codes(argon2.ARGON2_MEMORY_TOO_MUCH),
+	LANES_TOO_FEW = argon2_error_codes(argon2.ARGON2_LANES_TOO_FEW),
+	LANES_TOO_MANY = argon2_error_codes(argon2.ARGON2_LANES_TOO_MANY),
+	PWD_PTR_MISMATCH = argon2_error_codes(argon2.ARGON2_PWD_PTR_MISMATCH),
+	SALT_PTR_MISMATCH = argon2_error_codes(argon2.ARGON2_SALT_PTR_MISMATCH),
+	SECRET_PTR_MISMATCH = argon2_error_codes(argon2.ARGON2_SECRET_PTR_MISMATCH),
+	AD_PTR_MISMATCH = argon2_error_codes(argon2.ARGON2_AD_PTR_MISMATCH),
+	MEMORY_ALLOCATION_ERROR = argon2_error_codes(argon2.ARGON2_MEMORY_ALLOCATION_ERROR),
+	FREE_MEMORY_CBK_NULL = argon2_error_codes(argon2.ARGON2_FREE_MEMORY_CBK_NULL),
+	ALLOCATE_MEMORY_CBK_NULL = argon2_error_codes(argon2.ARGON2_ALLOCATE_MEMORY_CBK_NULL),
+	INCORRECT_PARAMETER = argon2_error_codes(argon2.ARGON2_INCORRECT_PARAMETER),
+	INCORRECT_TYPE = argon2_error_codes(argon2.ARGON2_INCORRECT_TYPE),
+	OUT_PTR_MISMATCH = argon2_error_codes(argon2.ARGON2_OUT_PTR_MISMATCH),
+	THREADS_TOO_FEW = argon2_error_codes(argon2.ARGON2_THREADS_TOO_FEW),
+	THREADS_TOO_MANY = argon2_error_codes(argon2.ARGON2_THREADS_TOO_MANY),
+	MISSING_ARGS = argon2_error_codes(argon2.ARGON2_MISSING_ARGS),
+	ENCODING_FAIL = argon2_error_codes(argon2.ARGON2_ENCODING_FAIL),
+	DECODING_FAIL = argon2_error_codes(argon2.ARGON2_DECODING_FAIL),
+	THREAD_FAIL = argon2_error_codes(argon2.ARGON2_THREAD_FAIL),
+	DECODING_LENGTH_FAIL = argon2_error_codes(argon2.ARGON2_DECODING_LENGTH_FAIL),
+	VERIFY_MISMATCH = argon2_error_codes(argon2.ARGON2_VERIFY_MISMATCH),
 
-	argon2d = argon2.Argon2_d,
-	argon2i = argon2.Argon2_i,
-	argon2id = argon2.Argon2_id,
+	argon2d = argon2_type(argon2.Argon2_d),
+	argon2i = argon2_type(argon2.Argon2_i),
+	argon2id = argon2_type(argon2.Argon2_id),
 
-	VERSION_10 = argon2.ARGON2_VERSION_10,
-	VERSION_13 = argon2.ARGON2_VERSION_13,
-	VERSION_NUMBER = argon2.ARGON2_VERSION_NUMBER
+	VERSION_10 = argon2_version(argon2.ARGON2_VERSION_10),
+	VERSION_13 = argon2_version(argon2.ARGON2_VERSION_13),
+	VERSION_NUMBER = argon2_version(argon2.ARGON2_VERSION_NUMBER)
 }
 
 local error_strings = {
