@@ -37,7 +37,7 @@ local function assert_eq(left, right)
 		error(string.format([[
 assertion failed! (left == right)
   left:  %s
-  right: %s]], tostring(left), tostring(right)))
+  right: %s]], tostring(left), tostring(right)), 2)
 	end
 end
 
