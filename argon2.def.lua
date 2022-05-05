@@ -81,7 +81,7 @@ DECODING_LENGTH_FAIL = --[[---@type argon2_error_codes ]] nil
 VERIFY_MISMATCH = --[[---@type argon2_error_codes ]] nil
 
 --- Returns a string for the given code. Returns the raw enum constant minus
---- `ERROR_` - for example, `OK` or `OUTPUT_PTR_NULL`. For a human-readable
+--- `ARGON2_` - for example, `OK` or `OUTPUT_PTR_NULL`. For a human-readable
 --- error message, use `error_message`.
 ---
 --- @param code argon2_error_codes

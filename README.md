@@ -59,7 +59,7 @@ local argon2 = require('argon2')
 
 ### `argon2_error_codes`
 
-This module re-exports all of Argon2's error codes without the `ERROR_` prefix.
+This module re-exports all of Argon2's error codes without the `ARGON2_` prefix.
 Assuming the module is stored in a variable named `argon2`:
 
 ```
@@ -130,7 +130,7 @@ argon2.VERSION_NUMBER
 *Syntax:* `str = argon2.error_to_string(code)`
 
 Returns a string for the given code. Returns the raw enum constant minus
-`ERROR_` - for example, `OK` or `OUTPUT_PTR_NULL`. For a human-readable error
+`ARGON2_` - for example, `OK` or `OUTPUT_PTR_NULL`. For a human-readable error
 message, use `error_message`.
 
 #### Parameters
